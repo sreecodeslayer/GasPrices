@@ -1,7 +1,10 @@
 package com.mainactivity.gasprices;
 
+import android.os.Build;
 import android.os.StrictMode;
 import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -35,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
     RadioButton petrolButton;
     RadioButton dieselButton;
     Spinner citySpinner;
-    TextView price_text;
+    TextView price_text, detail_text, date_text;
+    CoordinatorLayout main_activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         addListenerOnSpinnerItemSelection();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getSupportActionBar().setElevation(0);
+        }
+
+        main_activity = (CoordinatorLayout) findViewById(R.id.main_activity);
         // Strict mode for running GET req in main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
@@ -50,10 +59,13 @@ public class MainActivity extends AppCompatActivity {
         addListenerRadioButton();
         submitBtn = (Button) findViewById(R.id.get_price_button);
         price_text = (TextView) findViewById(R.id.price_text);
+        detail_text = (TextView) findViewById(R.id.detail_text);
+        date_text = (TextView) findViewById(R.id.date_text);
         addListenerSubmitButton();
 
 
     }
+
     public void addListenerOnSpinnerItemSelection() {
         citySpinner = (Spinner) findViewById(R.id.city_spinner);
         citySpinner.setOnItemSelectedListener(new CustomOnItemSelectedListener());
@@ -68,19 +80,19 @@ public class MainActivity extends AppCompatActivity {
         petrolButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selected=rg1.getCheckedRadioButtonId();
-                RadioButton petrolButton=(RadioButton)findViewById(selected);
+                int selected = rg1.getCheckedRadioButtonId();
+                RadioButton petrolButton = (RadioButton) findViewById(selected);
                 selected_gas_type = (String) petrolButton.getText();
-                Toast.makeText(MainActivity.this,selected_gas_type,Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, selected_gas_type, Toast.LENGTH_LONG).show();
             }
         });
         dieselButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selected=rg1.getCheckedRadioButtonId();
-                RadioButton dieselButton=(RadioButton)findViewById(selected);
+                int selected = rg1.getCheckedRadioButtonId();
+                RadioButton dieselButton = (RadioButton) findViewById(selected);
                 selected_gas_type = (String) dieselButton.getText();
-                Toast.makeText(MainActivity.this,selected_gas_type,Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, selected_gas_type, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -94,16 +106,18 @@ public class MainActivity extends AppCompatActivity {
 
                 HttpURLConnection urlConnection = null;
                 URL urlString = null;
-                selected_city =citySpinner.getSelectedItem().toString();
-                String url = "http://45.63.0.61:5001/getprice?city="+selected_city+"&kind="+selected_gas_type.toLowerCase();
+                selected_city = citySpinner.getSelectedItem().toString();
+                String url = "http://45.63.0.61:5001/getprice?city=" + selected_city + "&kind=" + selected_gas_type.toLowerCase();
                 // System.out.print(url);
-                if (Objects.equals(selected_city, "") || Objects.equals(selected_gas_type, "")){
-                    Toast.makeText(MainActivity.this,"Please select both City and Gas Type.",Toast.LENGTH_LONG).show();
-                }
-                else{
+                if (Objects.equals(selected_city, "") || Objects.equals(selected_gas_type, "")) {
+                    //Toast.makeText(MainActivity.this, "Please select both City and Gas type.", Toast.LENGTH_LONG).show();
+                    Snackbar snackbar = Snackbar
+                            .make(main_activity, "Please select both City and Gas Type", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                } else {
                     try {
                         urlString = new URL(url);
-                        Toast.makeText(MainActivity.this,url,Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, url, Toast.LENGTH_SHORT).show();
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
@@ -112,24 +126,26 @@ public class MainActivity extends AppCompatActivity {
                         assert urlString != null;
                         urlConnection = (HttpURLConnection) urlString.openConnection();
                         try {
-                            BufferedReader br=new BufferedReader(new InputStreamReader(urlString.openStream()));
+                            BufferedReader br = new BufferedReader(new InputStreamReader(urlString.openStream()));
                             String line;
                             StringBuilder sb = new StringBuilder();
                             while ((line = br.readLine()) != null) {
-                                 sb.append(line);
+                                sb.append(line);
                             }
 
                             JSONObject json = new JSONObject(sb.toString());
 
                             String price = json.getString("price");
+                            String date = json.getString("last_update");
 
 
                             // System.out.print(sb);
                             // Toast.makeText(MainActivity.this,"Connect! "+price,Toast.LENGTH_LONG).show();
-
-                            price_text.setText("Price of "+selected_gas_type+" in "+selected_city+" is Rs. "+price);
+                            detail_text.setText(selected_gas_type + " Price\nin " + selected_city);
+                            price_text.setText("₹" + price.trim());
+                            date_text.setText("Last Update: " + date.trim());
                         } catch (JSONException e) {
-                            Toast.makeText(MainActivity.this,"Error occured in getting price! Are you connected to Internet?",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this, "Error occured in getting price! Are you connected to Internet?", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         } finally {
                             urlConnection.disconnect();
