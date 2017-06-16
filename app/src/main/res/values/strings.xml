@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">GasPrices</string>
+    <string name="select_city">Select City</string>
+    <string name="select_gas_type">Select Gas type</string>
+    <string name="choose_petrol">Petrol</string>
+    <string name="choose_diesel">Diesel</string>
+    <string name="get_price_btn">Get Price</string>
+    <string name="Rs">\u20B9</string>
+    <string-array name="city_list">
+        <item>Delhi</item>
+        <item>Kolkata</item>
+        <item>Mumbai</item>
+        <item>Chennai</item>
+        <item>Faridabad</item>
+        <item>Gurgaon</item>
+        <item>Noida</item>
+        <item>Ghaziabad</item>
+        <item>Agartala</item>
+        <item>Aizwal</item>
+        <item>Ambala</item>
+        <item>Bangalore</item>
+        <item>Bhopal</item>
+        <item>Bhubhaneswar</item>
+        <item>Chandigarh</item>
+        <item>Dehradun</item>
+        <item>Gandhinagar</item>
+        <item>Gangtok</item>
+        <item>Guwahati</item>
+        <item>Hyderabad</item>
+        <item>Imphal</item>
+        <item>Itanagar</item>
+        <item>Jaipur</item>
+        <item>Jammu</item>
+        <item>Jullunder</item>
+        <item>Kohima</item>
+        <item>Lucknow</item>
+        <item>Panjim</item>
+        <item>Patna</item>
+        <item>Pondicherry</item>
+        <item>Port Blair</item>
+        <item>Raipur</item>
+        <item>Ranchi</item>
+        <item>Shillong</item>
+        <item>Shimla</item>
+        <item>Srinagar</item>
+        <item>Trivandrum</item>
+    </string-array>
+</resources>
